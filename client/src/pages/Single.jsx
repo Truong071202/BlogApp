@@ -6,6 +6,7 @@ import Menu from "../components/Menu";
 import axios from "axios";
 import moment from "moment";
 import { AuthContext } from "./../context/authContext";
+import { showSuccessToast } from "../services/toastService";
 
 const Single = () => {
   const [post, setPost] = useState({});
@@ -21,6 +22,7 @@ const Single = () => {
     try {
       await axios.delete(`/api/posts/${postId}`);
       navigate("/");
+      showSuccessToast("The post has been deleted");
     } catch (err) {
       console.log(err);
     }

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { start, done } from "../services/nprogressService"; // Import nprogressService
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
 
   const cat = useLocation().search;
 
@@ -19,53 +21,27 @@ const Home = () => {
     fetchData();
   }, [cat]);
 
-  // const posts = [
-  //   {
-  //     id: 1,
-  //     title:
-  //       "The Ultimate Guide to Mastering Full-Stack Web Development: From Beginner to Expert in 2024",
-  //     desc: "Unlock the secrets to becoming a full-stack web developer with our comprehensive guide. Whether you're just starting out or looking to enhance your skills, this step-by-step tutorial covers everything from front-end basics to advanced back-end techniques",
-  //     image:
-  //       "https://wallpapers.com/images/featured/aesthetic-pictures-hv6f88paqtseqh92.jpg",
-  //   },
-  //   {
-  //     id: 2,
-  //     title:
-  //       "The Ultimate Guide to Mastering Full-Stack Web Development: From Beginner to Expert in 2024",
-  //     desc: "Unlock the secrets to becoming a full-stack web developer with our comprehensive guide. Whether you're just starting out or looking to enhance your skills, this step-by-step tutorial covers everything from front-end basics to advanced back-end techniques",
-  //     image:
-  //       "https://wallpapers.com/images/featured/aesthetic-pictures-hv6f88paqtseqh92.jpg",
-  //   },
-  //   {
-  //     id: 3,
-  //     title:
-  //       "The Ultimate Guide to Mastering Full-Stack Web Development: From Beginner to Expert in 2024",
-  //     desc: "Unlock the secrets to becoming a full-stack web developer with our comprehensive guide. Whether you're just starting out or looking to enhance your skills, this step-by-step tutorial covers everything from front-end basics to advanced back-end techniques",
-  //     image:
-  //       "https://wallpapers.com/images/featured/aesthetic-pictures-hv6f88paqtseqh92.jpg",
-  //   },
-  //   {
-  //     id: 4,
-  //     title:
-  //       "The Ultimate Guide to Mastering Full-Stack Web Development: From Beginner to Expert in 2024",
-  //     desc: "Unlock the secrets to becoming a full-stack web developer with our comprehensive guide. Whether you're just starting out or looking to enhance your skills, this step-by-step tutorial covers everything from front-end basics to advanced back-end techniques",
-  //     image:
-  //       "https://wallpapers.com/images/featured/aesthetic-pictures-hv6f88paqtseqh92.jpg",
-  //   },
-  //   {
-  //     id: 1,
-  //     title:
-  //       "The Ultimate Guide to Mastering Full-Stack Web Development: From Beginner to Expert in 2024",
-  //     desc: "Unlock the secrets to becoming a full-stack web developer with our comprehensive guide. Whether you're just starting out or looking to enhance your skills, this step-by-step tutorial covers everything from front-end basics to advanced back-end techniques",
-  //     image:
-  //       "https://wallpapers.com/images/featured/aesthetic-pictures-hv6f88paqtseqh92.jpg",
-  //   },
-  // ];
-
-  const getText = (html) => {
+  const getText = (html, limit = 50) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
-    return doc.body.textContent;
+    const text = doc.body.textContent || "";
+
+    const words = text.split(" ");
+
+    if (words.length > limit) {
+      return words.slice(0, limit).join(" ") + "...";
+    }
+
+    return text;
   };
+
+  const handleReadMore = (id) => {
+    start(); // Start the progress bar
+    setTimeout(() => {
+      navigate(`/post/${id}`);
+      done(); // Complete the progress bar
+    }, 500); // Adjust the delay as needed
+  };
+
   return (
     <div className="home">
       <div className="posts">
@@ -78,10 +54,8 @@ const Home = () => {
               <Link className="link" to={`/post/${post.id}`}>
                 <h1>{post.title}</h1>
               </Link>
-              <p>{getText(post.desc)}</p>
-              <Link to={`/post/${post.id}`}>
-                <button>Read more</button>
-              </Link>
+              <p style={{ marginBottom: "20px" }}>{getText(post.desc, 30)}</p>
+              <button onClick={() => handleReadMore(post.id)}>Read more</button>
             </div>
           </div>
         ))}

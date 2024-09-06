@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
+import { showSuccessToast, showErrorToast } from "../services/toastService";
 
 const Write = () => {
   const state = useLocation().state;
@@ -11,8 +12,17 @@ const Write = () => {
   const [title, setTitle] = useState(state?.title || "");
   const [file, setFile] = useState(null);
   const [cat, setCat] = useState(state?.cat || "");
+  const [currentImg, setCurrentImg] = useState(state?.img || ""); // State for current image
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Set current image if available when component mounts
+    if (state?.img) {
+      setCurrentImg(state.img);
+    }
+  }, [state?.img]);
+
   const upload = async () => {
     try {
       const formData = new FormData();
@@ -26,31 +36,40 @@ const Write = () => {
 
   const handleClick = async (e) => {
     e.preventDefault();
-    const imgUrl = await upload();
+    let imgUrl = currentImg; // Use current image URL by default
+
+    if (file) {
+      // If there is a new file, upload it and get the new URL
+      imgUrl = await upload();
+    }
 
     try {
       if (state) {
+        // Update existing post
         await axios.put(`/api/posts/${state.id}`, {
           title,
           desc: value,
           cat,
-          img: file ? imgUrl : "",
+          img: imgUrl, // Use the new or existing image URL
         });
       } else {
+        // Create new post
         await axios.post(`/api/posts/`, {
           title,
           desc: value,
           cat,
-          img: file ? imgUrl : "",
+          img: imgUrl, // Use the new or existing image URL
           date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
         });
       }
       navigate("/");
+      showSuccessToast("Success!");
     } catch (err) {
       console.error(
         "Error during API request:",
         err.response?.data || err.message
       );
+      showErrorToast("Failed!");
     }
   };
 
@@ -58,6 +77,7 @@ const Write = () => {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent;
   };
+
   return (
     <div className="add">
       <div className="content">
@@ -139,35 +159,35 @@ const Write = () => {
           <div className="cat">
             <input
               type="radio"
-              checked={cat === "cinema"}
+              checked={cat === "film"}
               name="cat"
-              value="cinema"
-              id="cinema"
+              value="film"
+              id="film"
               onChange={(e) => setCat(e.target.value)}
             />
-            <label htmlFor="cinema">Cinema</label>
+            <label htmlFor="film">Film</label>
           </div>
           <div className="cat">
             <input
               type="radio"
-              checked={cat === "design"}
+              checked={cat === "love"}
               name="cat"
-              value="design"
-              id="design"
+              value="love"
+              id="love"
               onChange={(e) => setCat(e.target.value)}
             />
-            <label htmlFor="design">Design</label>
+            <label htmlFor="love">Love</label>
           </div>
           <div className="cat">
             <input
               type="radio"
-              checked={cat === "food"}
+              checked={cat === "music"}
               name="cat"
-              value="food"
-              id="food"
+              value="music"
+              id="music"
               onChange={(e) => setCat(e.target.value)}
             />
-            <label htmlFor="food">Food</label>
+            <label htmlFor="music">Music</label>
           </div>
         </div>
       </div>

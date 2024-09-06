@@ -12,6 +12,9 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import "./style.scss";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "nprogress/nprogress.css";
 
 //const layout to use for pages with Navbar and Footer
 const Layout = () => {
@@ -52,6 +55,7 @@ function App() {
       <div className="container">
         <RouterProvider router={router} />
       </div>
+      <ToastContainer />
     </div>
   );
 }

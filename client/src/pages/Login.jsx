@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext.jsx";
+import { showSuccessToast, showErrorToast } from "../services/toastService";
 
 const Login = () => {
   const [inputs, setInputs] = useState({
@@ -24,8 +25,10 @@ const Login = () => {
     try {
       await login(inputs);
       navigate("/");
+      showSuccessToast("Login Success!");
     } catch (err) {
       setError(err.response.data);
+      showErrorToast("Login Failed!");
     }
   };
 

@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 export const AuthContext = createContext();
+import { showSuccessToast } from "../services/toastService";
 
 export const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
@@ -16,6 +17,7 @@ export const AuthContextProvider = ({ children }) => {
       // Assuming you don't need to pass any data, an empty object can be used
       await axios.post("/api/auth/logout", {});
       setCurrentUser(null);
+      showSuccessToast("Logout Success!");
     } catch (err) {
       console.error(err);
     }
