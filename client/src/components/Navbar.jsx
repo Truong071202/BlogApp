@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext.jsx";
 import { start, done } from "../services/nprogressService"; // Import nprogressService
 import logo from "../img/DotBlog_domain_logo.png";
+import "./css-responsive/navbar.scss";
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext);
@@ -82,6 +83,7 @@ const Navbar = () => {
               className="link"
               to="/login"
               onClick={() => handleLinkClick("/login")}
+              style={{ textTransform: "uppercase" }}
             >
               Login
             </Link>
@@ -91,6 +93,7 @@ const Navbar = () => {
               className="link"
               to="/write"
               onClick={() => handleLinkClick("/write")}
+              style={{ textTransform: "uppercase" }}
             >
               Write
             </Link>

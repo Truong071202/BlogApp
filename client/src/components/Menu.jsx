@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { start, done } from "../services/nprogressService"; // Import nprogressService
+import { Link, useNavigate } from "react-router-dom";
 
 const Menu = ({ cat }) => {
   const [posts, setPosts] = useState([]);
@@ -15,6 +17,16 @@ const Menu = ({ cat }) => {
     };
     fetchData();
   }, [cat]);
+
+  const navigate = useNavigate();
+  const handleReadMore = (id) => {
+    start(); // Start the progress bar
+    setTimeout(() => {
+      navigate(`/post/${id}`);
+      done(); // Complete the progress bar
+      window.scrollTo(0, 0);
+    }, 500); // Adjust the delay as needed
+  };
   // const posts = [
   //   {
   //     id: 1,
@@ -63,8 +75,13 @@ const Menu = ({ cat }) => {
       {posts.map((post) => (
         <div className="post" key={post.id}>
           <img src={`../upload/${post?.img}`} alt="" />
-          <h2>{post.title}</h2>
-          <button>Read more</button>
+          <Link
+            onClick={() => handleReadMore(post.id)}
+            style={{ textDecoration: "unset" }}
+          >
+            <h2>{post.title}</h2>
+          </Link>
+          <button onClick={() => handleReadMore(post.id)}>Read more</button>
         </div>
       ))}
     </div>
